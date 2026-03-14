@@ -1,30 +1,30 @@
-# 🎬 Movie Web App
+# Movie Web App
 
 A full-stack web application that displays movies currently playing in cinemas, built with Node.js, Express, and SQL Server.
 
-## 📸 Screenshots
+## Screenshots
 
-![Home Page](images/home.png)
-![Movie Details](images/modal.png)
-![Favorites](images/favorites.png)
+![Home Page](screenshots/home.png)
+![Movie Details](screenshots/modal.png)
+![Favorites](screenshots/favorites.png)
 
-## ✨ Features
+## Features
 
-- 🎥 Fetches real-time movies from TMDB API
-- 🔍 Search movies by title
-- 🎭 Filter movies by genre
-- ℹ️ Click on a movie to see details
-- ❤️ Add/remove movies to favorites
-- 💾 Favorites saved per user in database
+- Fetches real-time movies from TMDB API
+- Search movies by title
+- Filter movies by genre
+- Click on a movie to see details
+- Add/remove movies to favorites
+- Favorites saved per user in database
 
-## 🛠️ Technologies
+## Technologies
 
 - **Frontend:** HTML, CSS, JavaScript, Bootstrap 5
 - **Backend:** Node.js, Express.js
 - **Database:** SQL Server (SSMS)
 - **API:** TMDB (The Movie Database)
 
-## 🚀 How to Run
+## How to Run
 
 1. Clone the repository
 2. Install dependencies:
@@ -46,7 +46,7 @@ node server.js
 ```
 5. Open `http://localhost:3000`
 
-## 📁 Project Structure
+## Project Structure
 
 | Branch | Description |
 |--------|-------------|
@@ -54,6 +54,6 @@ node server.js
 | `backend` | Node.js server, API endpoints |
 | `frontend` | HTML, CSS, JavaScript UI |
 
-## 🔗 API Used
+## API Used
 
 - [TMDB API](https://www.themoviedb.org/documentation/api)
