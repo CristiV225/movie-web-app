@@ -13,8 +13,7 @@
         .card-title { color: white; font-size: 0.95rem; }
         .badge-rating { background-color: #e50914; color: white; padding: 4px 8px; border-radius: 5px; font-size: 0.85rem; }
         .card-img-top { height: 300px; object-fit: cover; }
-        #search-input::placeholder {
-            color: #aaaaaa;}
+        #search-input::placeholder { color: #aaaaaa; }
         .modal-content { background-color: #1f1f1f; color: white; }
         .modal-header { border-bottom: 1px solid #333; }
         .modal-footer { border-top: 1px solid #333; }
@@ -23,10 +22,10 @@
 </head>
 <body>
 
-    <h1>🎬 Now Playing in Cinemas</h1>
-    
+    <h1>Now Playing in Cinemas</h1>
+
     <div class="container mb-4">
-        <input type="text" id="search-input" class="form-control mb-3" placeholder="🔍 Search movies..." 
+        <input type="text" id="search-input" class="form-control mb-3" placeholder="🔍 Search movies..."
         style="background-color:#1f1f1f; color:#aaaaaa; border:1px solid #333;">
         <div id="genre-filters" class="d-flex gap-2 flex-wrap"></div>
     </div>
@@ -36,13 +35,12 @@
     </div>
 
     <div class="container mt-5">
-        <h2 style="color:#e50914;">❤️ My Favorites</h2>
+        <h2 style="color:#e50914;">My Favorites</h2>
         <div class="row g-4" id="favorites-container">
-            <p style="color:#aaaaaa;">No favorites yet. Click 🤍 on a movie to add it!</p>
+            <p style="color:#aaaaaa;">No favorites yet. Click the heart icon on a movie to add it!</p>
         </div>
     </div>
 
-    <!-- Modal -->
     <div class="modal fade" id="movieModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -67,6 +65,13 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // keep username for favorite movies to be saved
+        let username = localStorage.getItem('username');
+        if (!username) {
+            username = prompt('Enter your username:');
+            localStorage.setItem('username', username);
+        }
+
         async function loadMovies() {
             const response = await fetch('/movies');
             const movies = await response.json();
@@ -83,10 +88,9 @@
                             <h6 class="card-title">${movie.title}</h6>
                             <span class="badge-rating">⭐ ${movie.rating}</span>
                             <p style="font-size:0.8rem; color:#aaaaaa;">${movie.year}</p>
-                            <button class="btn btn-sm fav-btn" data-id="${movie.id}" 
-                            onclick="toggleFavorite(${movie.id}, this)" 
+                            <button class="btn btn-sm fav-btn" data-id="${movie.id}"
+                            onclick="event.stopPropagation(); toggleFavorite(${movie.id}, this)"
                             style="background:none; border:none; font-size:1.2rem; padding:0;">🤍</button>
-                            
                         </div>
                     </div>
                 `;
@@ -103,22 +107,14 @@
             new bootstrap.Modal(document.getElementById('movieModal')).show();
         }
 
-        let username = localStorage.getItem('username');
-        if (!username) {
-            username = prompt('Enter your username:');
-            localStorage.setItem('username', username);
-        }
-
-        loadMovies();
-        loadFavorites();
-
         async function loadGenres() {
             const response = await fetch('/movies');
             const movies = await response.json();
-    
+
+            // get unique genres from movies list
             const genres = [...new Set(movies.map(m => m.genre).filter(Boolean))];
             const container = document.getElementById('genre-filters');
-    
+
             const allBtn = document.createElement('button');
             allBtn.className = 'btn btn-sm btn-danger';
             allBtn.textContent = 'All';
@@ -140,93 +136,94 @@
             });
             clickedBtn.className = 'btn btn-sm btn-danger';
 
-            const cards = document.querySelectorAll('.col-6');
-         cards.forEach(card => {
-            if (genre === 'all') {
-                card.style.display = 'block';
-            } else {
-                const cardGenre = card.getAttribute('data-genre');
-                card.style.display = cardGenre === genre ? 'block' : 'none';
-            }
-        });
-    }
-
-    loadGenres();
-
-    async function loadFavorites() {
-        const response = await fetch(`/favorites/${username}`);
-        const favorites = await response.json();
-        window.favoriteIds = favorites.map(f => f.id);
-        updateFavoriteButtons();
-
-        const container = document.getElementById('favorites-container');
-        container.innerHTML = '';
-
-        if (favorites.length === 0) {
-            container.innerHTML = '<p style="color:#aaaaaa;">No favorites yet. Click 🤍 on a movie to add it!</p>';
-            return;}
-
-        favorites.forEach(movie => {
-            const col = document.createElement('div');
-            col.className = 'col-6 col-md-3';
-            col.innerHTML = `
-                <div class="card h-100">
-                    <img src="${movie.poster_url}" class="card-img-top" alt="${movie.title}">
-                    <div class="card-body">
-                        <h6 class="card-title">${movie.title}</h6>
-                        <span class="badge-rating">⭐ ${movie.rating}</span>
-                        <p style="font-size:0.8rem; color:#aaaaaa;">${movie.year}</p>
-                    </div>
-                </div>
-            `;
-            container.appendChild(col);
-        });
-    }
-
-    function updateFavoriteButtons() {
-        document.querySelectorAll('.fav-btn').forEach(btn => {
-            const movieId = parseInt(btn.getAttribute('data-id'));
-            if (window.favoriteIds && window.favoriteIds.includes(movieId)) {
-                btn.textContent = '❤️';
-                btn.classList.add('active');
-            } else {
-                btn.textContent = '🤍';
-                btn.classList.remove('active');
-            }
-        });
-    }
-
-    async function toggleFavorite(movieId, btn) {
-        const isFav = window.favoriteIds && window.favoriteIds.includes(movieId);
-    
-        if (isFav) {
-            await fetch('/favorites', {
-                method: 'DELETE',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, movie_id: movieId })
+            document.querySelectorAll('.col-6').forEach(card => {
+                if (genre === 'all') {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = card.getAttribute('data-genre') === genre ? 'block' : 'none';
+                }
             });
-            window.favoriteIds = window.favoriteIds.filter(id => id !== movieId);
-        } else {
-            await fetch('/favorites', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, movie_id: movieId })
-            });
-            window.favoriteIds = [...(window.favoriteIds || []), movieId];
         }
-        updateFavoriteButtons();
-        loadFavorites();
-    }
 
+        async function loadFavorites() {
+            const response = await fetch(`/favorites/${username}`);
+            const favorites = await response.json();
+
+            window.favoriteIds = favorites.map(f => f.id);
+            updateFavoriteButtons();
+
+            const container = document.getElementById('favorites-container');
+            container.innerHTML = '';
+
+            if (favorites.length === 0) {
+                container.innerHTML = '<p style="color:#aaaaaa;">No favorites yet. Click the heart icon on a movie to add it!</p>';
+                return;
+            }
+
+            favorites.forEach(movie => {
+                const col = document.createElement('div');
+                col.className = 'col-6 col-md-3';
+                col.innerHTML = `
+                    <div class="card h-100">
+                        <img src="${movie.poster_url}" class="card-img-top" alt="${movie.title}">
+                        <div class="card-body">
+                            <h6 class="card-title">${movie.title}</h6>
+                            <span class="badge-rating">⭐ ${movie.rating}</span>
+                            <p style="font-size:0.8rem; color:#aaaaaa;">${movie.year}</p>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(col);
+            });
+        }
+
+        function updateFavoriteButtons() {
+            document.querySelectorAll('.fav-btn').forEach(btn => {
+                const movieId = parseInt(btn.getAttribute('data-id'));
+                if (window.favoriteIds && window.favoriteIds.includes(movieId)) {
+                    btn.textContent = '❤️';
+                    btn.classList.add('active');
+                } else {
+                    btn.textContent = '🤍';
+                    btn.classList.remove('active');
+                }
+            });
+        }
+
+        async function toggleFavorite(movieId, btn) {
+            const isFav = window.favoriteIds && window.favoriteIds.includes(movieId);
+
+            if (isFav) {
+                await fetch('/favorites', {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, movie_id: movieId })
+                });
+                window.favoriteIds = window.favoriteIds.filter(id => id !== movieId);
+            } else {
+                await fetch('/favorites', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, movie_id: movieId })
+                });
+                window.favoriteIds = [...(window.favoriteIds || []), movieId];
+            }
+            updateFavoriteButtons();
+            loadFavorites();
+        }
+
+        // filter movies as user types
         document.getElementById('search-input').addEventListener('input', function() {
             const search = this.value.toLowerCase();
-            const cards = document.querySelectorAll('.col-6');
-            cards.forEach(card => {
+            document.querySelectorAll('.col-6').forEach(card => {
                 const title = card.querySelector('.card-title').textContent.toLowerCase();
                 card.style.display = title.includes(search) ? 'block' : 'none';
             });
-        });     
+        });
 
+        loadMovies();
+        loadGenres();
+        loadFavorites();
     </script>
 
 </body>
