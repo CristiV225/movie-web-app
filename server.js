@@ -158,13 +158,4 @@ app.use(express.static('public'));
 app.listen(process.env.PORT, async () => {
     console.log(`Server running on http://localhost:${process.env.PORT}`);
     await fetchAndSaveMovies();
-    setTimeout(async () => {
-        const pool = await sql.connect(dbConfig);
-        const result = await pool.request().query('SELECT COUNT(*) as count FROM movies');
-        if (result.recordset[0].count === 0) {
-            console.log('Retrying fetch...');
-            await fetchAndSaveMovies();
-        }
-        sql.close();
-    }, 5000);
 });
