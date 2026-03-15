@@ -4,9 +4,10 @@ A full-stack web application that displays movies currently playing in cinemas, 
 
 ## Screenshots
 
-![Home Page](screenshots/home.png)
-![Movie Details](screenshots/modal.png)
-![Favorites](screenshots/favorites.png)
+![Home Page](screenshots/home_page.jpg)
+![Movie Details](screenshots/movie_details.jpg)
+![Genre Filtering](screenshots/category_filtering.jpg)
+![Favorites](screenshots/favorites_section.jpg)
 
 ## Features
 
@@ -31,7 +32,7 @@ A full-stack web application that displays movies currently playing in cinemas, 
 ```bash
 npm install
 ```
-3. Create a `.env` file based on `.env.example`:
+3. Create a `.env` file based on `ex.env`:
 ```
 TMDB_API_KEY=your_key_here
 DB_SERVER=your_server
@@ -50,7 +51,7 @@ node server.js
 
 | Branch | Description |
 |--------|-------------|
-| `database` | SQL schema and database diagram |
+| `database` | SQL and database diagram |
 | `backend` | Node.js server, API endpoints |
 | `frontend` | HTML, CSS, JavaScript UI |
 
