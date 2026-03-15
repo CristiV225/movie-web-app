@@ -9,7 +9,6 @@ dotenv.config();
 const app = express();
 app.use(cors());
 app.use(express.json());
-app.get('/test', (req, res) => res.json({ ok: true }));
 
 // Database configuration
 const dbConfig = {
@@ -73,7 +72,7 @@ async function fetchAndSaveMovies() {
     }
 }
 
-// Endpoint - return all movies
+// Return all movies
 app.get('/movies', async (req, res) => {
     try {
         const pool = await sql.connect(dbConfig);
@@ -90,23 +89,16 @@ app.post('/favorites', async (req, res) => {
     try {
         const { username, movie_id } = req.body;
         const pool = await sql.connect(dbConfig);
-        
-        // Create user if not exists
         await pool.request()
             .input('username', sql.VarChar, username)
             .query(`
                 IF NOT EXISTS (SELECT 1 FROM users WHERE username = @username)
                 INSERT INTO users (username, password) VALUES (@username, 'guest')
             `);
-        
-        // Get user id
         const userResult = await pool.request()
             .input('username', sql.VarChar, username)
             .query('SELECT id FROM users WHERE username = @username');
-        
         const user_id = userResult.recordset[0].id;
-        
-        // Add to favorites if not exists
         await pool.request()
             .input('user_id', sql.Int, user_id)
             .input('movie_id', sql.Int, movie_id)
@@ -114,7 +106,6 @@ app.post('/favorites', async (req, res) => {
                 IF NOT EXISTS (SELECT 1 FROM favorites WHERE user_id = @user_id AND movie_id = @movie_id)
                 INSERT INTO favorites (user_id, movie_id) VALUES (@user_id, @movie_id)
             `);
-        
         res.json({ success: true });
         sql.close();
     } catch (err) {
@@ -140,9 +131,6 @@ app.get('/favorites/:username', async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
-
-app.get('/favorites/:username', async (req, res) => {
-    console.log('Favorites endpoint hit:', req.params.username);});
 
 // Remove from favorites
 app.delete('/favorites', async (req, res) => {
@@ -170,7 +158,6 @@ app.use(express.static('public'));
 app.listen(process.env.PORT, async () => {
     console.log(`Server running on http://localhost:${process.env.PORT}`);
     await fetchAndSaveMovies();
-    // Retry after 5 seconds if failed
     setTimeout(async () => {
         const pool = await sql.connect(dbConfig);
         const result = await pool.request().query('SELECT COUNT(*) as count FROM movies');
