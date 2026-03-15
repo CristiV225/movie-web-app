@@ -8,7 +8,7 @@ A full-stack web application that displays movies currently playing in cinemas, 
 ![Home Page](screenshots/home_page.jpg)
 Movies currently playing in cinemas, fetched automatically from TMDB API and displayed in a responsive grid.
 
-### Movie Details Modal
+### Movie Details 
 ![Movie Details](screenshots/movie_details.jpg)
 Click on any movie to see title, rating, release year and description.
 
