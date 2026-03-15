@@ -4,10 +4,17 @@ A full-stack web application that displays movies currently playing in cinemas, 
 
 ## Screenshots
 
-![Home Page](screenshots/home_page.jpg)
-![Movie Details](screenshots/movie_details.jpg)
-![Genre Filtering](screenshots/category_filtering.jpg)
-![Favorites](screenshots/favorites_section.jpg)
+### Home Page - Movie Grid
+![Home Page](screenshots/home.png)
+Movies currently playing in cinemas, fetched from TMDB API.
+
+### Movie Details Modal
+![Movie Details](screenshots/modal.png)
+Click on any movie to see title, rating, release year and description.
+
+### My Favorites
+![Favorites](screenshots/favorites.png)
+Add movies to favorites - saved per user in the database.
 
 ## Features
 
